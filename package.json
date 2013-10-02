@@ -1,0 +1,17 @@
+{
+	"name": "tester-response-server",
+	"description": "Servidor para testes de respostas",
+	"version": "1.0.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/gustavopaes/tester-response-server.git"
+	},
+	"author": {
+		"name": "Gustavo Paes",
+		"email": "gustavo.paes@gmail.com",
+		"url": "http://gustavopaes.net/"
+	},
+	"dependencies": {},
+	"engine": "node 0.10.2",
+	"readmeFilename": "README.md"
+}
