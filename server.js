@@ -5,53 +5,66 @@
  * Servidor para realização de testes de respostas HTTP.
  * Permite simular timeout.
  */
-(function( PORT ) {
-  "use strict";
+"use strict";
 
-  var http = require('http'),
-    _url = require('url');
+const http = require('http');
+const parseUrl = require('url').parse;
+const PORT = process.env.PORT || 8080;
 
-  // Inicia o server HTTP.
-  // O websocket usará a mesma porta para a conexão,
-  // só que através do protocolo 'ws' e não 'http'.
-  var server = http.createServer(function(request, response) {
-    var url = _url.parse(request.url, true);
+const handlerRequest = (request, response) => {
+  let url = parseUrl(request.url, true);
 
-    // define o http code
-    var defines = url.pathname.match(/^\/(json|jsonp|html)\/(\d+)\/?$/);
+  console.log(`-> ${url.pathname}`);
 
-    if(defines) {
-      var code = defines[2],
-        contentType = '',
-        text = '';
+  // define o http code
+  // /(content-type)/(http status)/
+  let defines = url.pathname.match(/^\/(json|jsonp|html)\/(\d+)\/?$/);
 
-      switch(defines[1]) {
-        case 'json':
-          contentType = 'application/json';
-          text = JSON.stringify({ 'code': +code });
-        break;
+  if(defines) {
+    let code = defines[2];
+    let contentType = '';
+    let text = '';
 
-        case 'jsonp':
-          contentType = 'application/javascript';
-          text =  (url.query.callback ? url.query.callback : 'callback') + '('+JSON.stringify({ 'code': code })+');';
-        break;
+    switch(defines[1]) {
+      case 'json':
+        contentType = 'application/json';
+        text = JSON.stringify({ 'code': +code });
+      break;
 
-        case 'html':
-          contentType = 'text/html';
-          text = '<h1>Code '+code+'</h1>';
-        break;
-      }
+      case 'jsonp':
+        contentType = 'application/javascript';
+        text =  (url.query.callback ? url.query.callback : 'callback') + '('+JSON.stringify({ 'code': code })+');';
+      break;
 
-      setTimeout(function() {
-        response.writeHead(code, { 'Content-Type': contentType, 'charset': 'utf-8' });
-        response.end( text );
-      }, (+url.query.timeout || 0) * 1000);
+      case 'html':
+        contentType = 'text/html';
+        text = '<h1>Code '+code+'</h1>';
+      break;
 
-    }
-    else {
-      response.end();
+      default:
+        contentType = 'text/plain';
+        text = code;
+      break;
     }
 
-  }).listen( PORT );
+    setTimeout(function() {
+      response.writeHead(code, {
+        'Content-Type': contentType,
+        'charset': 'utf-8'
+      });
+      response.end( text );
+    }, (parseInt(url.query.timeout) || 0) * 1000);
+  }
+  else {
+    response.write(url.pathname);
+    response.end();
+  }
+};
 
-}(8080));
+// Inicia o server HTTP.
+// O websocket usará a mesma porta para a conexão,
+// só que através do protocolo 'ws' e não 'http'.
+const server = http.createServer(handlerRequest);
+server.listen( PORT );
+
+console.log(`http://localhost:${PORT}`);

@@ -13,6 +13,9 @@ de testes de respostas HTTP (ie: 404, 501, 200, etc...) e simular demora nas res
     git clone https://github.com/gustavopaes/tester-response-server.git
     node server.js
 
+    // configurando a porta
+    PORT=80 node server.js
+
 ### Exemplos
 
 É possível fazer o servidor retornar HTML, JSON ou JSONP. Qualquer código HTTP é aceito. Exemplos:
