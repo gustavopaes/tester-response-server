@@ -28,22 +28,22 @@ const handlerRequest = (request, response) => {
     switch(defines[1]) {
       case 'json':
         contentType = 'application/json';
-        text = JSON.stringify({ 'code': +code });
+        text = JSON.stringify({ 'code': +code, 'method': request.method });
       break;
 
       case 'jsonp':
         contentType = 'application/javascript';
-        text =  (url.query.callback ? url.query.callback : 'callback') + '('+JSON.stringify({ 'code': code })+');';
+        text =  (url.query.callback ? url.query.callback : 'callback') + '('+JSON.stringify({ 'code': code, 'method': request.method })+');';
       break;
 
       case 'html':
         contentType = 'text/html';
-        text = '<h1>Code '+code+'</h1>';
+        text = '<h1>Code '+code+', Method '+request.method+'</h1>';
       break;
 
       default:
         contentType = 'text/plain';
-        text = code;
+        text = code + '\t' + request.method;
       break;
     }
 
