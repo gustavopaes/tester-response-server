@@ -50,6 +50,8 @@ const handlerRequest = (request, response) => {
     setTimeout(function() {
       response.writeHead(code, {
         'Content-Type': contentType,
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET',
         'charset': 'utf-8'
       });
       response.end( text );
